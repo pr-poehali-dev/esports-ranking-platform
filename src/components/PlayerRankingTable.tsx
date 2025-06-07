@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Table,
@@ -8,49 +7,20 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import Icon from "@/components/ui/icon";
 
 interface Player {
   id: string;
   name: string;
-  rating: number;
   rank: number;
 }
 
 interface PlayerRankingTableProps {
   players: Player[];
   isAdmin: boolean;
-  onUpdatePlayer: (playerId: string, newRating: number) => void;
 }
 
-const PlayerRankingTable = ({
-  players,
-  isAdmin,
-  onUpdatePlayer,
-}: PlayerRankingTableProps) => {
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [editValue, setEditValue] = useState("");
-
-  const handleEdit = (player: Player) => {
-    setEditingId(player.id);
-    setEditValue(player.rating.toString());
-  };
-
-  const handleSave = (playerId: string) => {
-    const newRating = parseInt(editValue);
-    if (!isNaN(newRating) && newRating >= 0) {
-      onUpdatePlayer(playerId, newRating);
-    }
-    setEditingId(null);
-  };
-
-  const handleCancel = () => {
-    setEditingId(null);
-    setEditValue("");
-  };
-
+const PlayerRankingTable = ({ players, isAdmin }: PlayerRankingTableProps) => {
   return (
     <Card className="w-full">
       <CardHeader>
@@ -68,14 +38,6 @@ const PlayerRankingTable = ({
                   Место
                 </TableHead>
                 <TableHead className="font-semibold">Игрок</TableHead>
-                <TableHead className="w-24 text-center font-semibold">
-                  Рейтинг
-                </TableHead>
-                {isAdmin && (
-                  <TableHead className="w-24 text-center font-semibold">
-                    Действия
-                  </TableHead>
-                )}
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -102,53 +64,6 @@ const PlayerRankingTable = ({
                   <TableCell className="font-medium text-gray-900">
                     {player.name}
                   </TableCell>
-                  <TableCell className="text-center">
-                    {editingId === player.id ? (
-                      <Input
-                        value={editValue}
-                        onChange={(e) => setEditValue(e.target.value)}
-                        className="w-20 text-center"
-                        type="number"
-                        min="0"
-                      />
-                    ) : (
-                      <span className="font-semibold text-purple-600">
-                        {player.rating}
-                      </span>
-                    )}
-                  </TableCell>
-                  {isAdmin && (
-                    <TableCell className="text-center">
-                      {editingId === player.id ? (
-                        <div className="flex justify-center space-x-1">
-                          <Button
-                            onClick={() => handleSave(player.id)}
-                            size="sm"
-                            className="h-8 w-8 p-0"
-                          >
-                            <Icon name="Check" size={14} />
-                          </Button>
-                          <Button
-                            onClick={handleCancel}
-                            variant="outline"
-                            size="sm"
-                            className="h-8 w-8 p-0"
-                          >
-                            <Icon name="X" size={14} />
-                          </Button>
-                        </div>
-                      ) : (
-                        <Button
-                          onClick={() => handleEdit(player)}
-                          variant="ghost"
-                          size="sm"
-                          className="h-8 w-8 p-0 hover:bg-purple-50"
-                        >
-                          <Icon name="Edit" size={14} />
-                        </Button>
-                      )}
-                    </TableCell>
-                  )}
                 </TableRow>
               ))}
             </TableBody>

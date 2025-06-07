@@ -3,7 +3,6 @@ import { useState, useEffect } from "react";
 interface Player {
   id: string;
   name: string;
-  rating: number;
   rank: number;
 }
 
@@ -143,8 +142,7 @@ const createInitialData = () => {
   const players = initialPlayers.map((name, index) => ({
     id: `player-${index}`,
     name,
-    rating: generateRandomRating(),
-    rank: 0,
+    rank: index + 1,
   }));
 
   const teams = initialTeams.map((name, index) => ({
@@ -172,39 +170,23 @@ export const useRankingData = () => {
     if (savedData) {
       const { players: savedPlayers, teams: savedTeams } =
         JSON.parse(savedData);
-      setPlayers(calculateRanks(savedPlayers));
+      setPlayers(savedPlayers);
       setTeams(calculateRanks(savedTeams));
     } else {
       const { players: initialPlayersData, teams: initialTeamsData } =
         createInitialData();
-      const rankedPlayers = calculateRanks(initialPlayersData);
       const rankedTeams = calculateRanks(initialTeamsData);
-      setPlayers(rankedPlayers);
+      setPlayers(initialPlayersData);
       setTeams(rankedTeams);
       localStorage.setItem(
         "cyber-rankings",
         JSON.stringify({
-          players: rankedPlayers,
+          players: initialPlayersData,
           teams: rankedTeams,
         }),
       );
     }
   }, []);
-
-  const updatePlayer = (playerId: string, newRating: number) => {
-    const updatedPlayers = players.map((player) =>
-      player.id === playerId ? { ...player, rating: newRating } : player,
-    );
-    const rankedPlayers = calculateRanks(updatedPlayers);
-    setPlayers(rankedPlayers);
-    localStorage.setItem(
-      "cyber-rankings",
-      JSON.stringify({
-        players: rankedPlayers,
-        teams,
-      }),
-    );
-  };
 
   const updateTeam = (teamId: string, newRating: number) => {
     const updatedTeams = teams.map((team) =>
@@ -224,7 +206,6 @@ export const useRankingData = () => {
   return {
     players,
     teams,
-    updatePlayer,
     updateTeam,
   };
 };
